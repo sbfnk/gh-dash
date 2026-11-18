@@ -301,6 +301,7 @@ type Reviews struct {
 type ReviewThreadsWithComments struct {
 	Nodes []struct {
 		Id           string
+		IsResolved   bool
 		IsOutdated   bool
 		OriginalLine int
 		StartLine    int

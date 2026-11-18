@@ -152,9 +152,16 @@ func (m *Model) viewMergeStatus() (string, checkSectionStatus) {
 	} else if m.pr.Data.Primary.MergeStateStatus == "BLOCKED" {
 		icon = m.ctx.Styles.Common.FailureGlyph
 		title = "Merging is blocked"
+		reasons := make([]string, 0, 2)
 		if numReviewOwners > 0 {
-			subtitle = "Waiting on code owner review"
+			reasons = append(reasons, "Waiting on code owner review")
 		}
+		if n := m.numUnresolvedReviewThreads(); n == 1 {
+			reasons = append(reasons, "1 unresolved review thread")
+		} else if n > 1 {
+			reasons = append(reasons, fmt.Sprintf("%d unresolved review threads", n))
+		}
+		subtitle = strings.Join(reasons, ", ")
 		status = statusFailure
 	} else if m.pr.Data.Primary.Mergeable == "CONFLICTING" {
 		icon = m.ctx.Styles.Common.FailureGlyph
@@ -653,6 +660,20 @@ func (m *Model) getChecksStats() checksStats {
 	}
 
 	return res
+}
+
+// numUnresolvedReviewThreads counts the open threads among those fetched, so
+// it is a lower bound on pull requests with more threads than the query asks for.
+func (m *Model) numUnresolvedReviewThreads() int {
+	numUnresolved := 0
+
+	for _, thread := range m.pr.Data.Enriched.ReviewThreads.Nodes {
+		if !thread.IsResolved {
+			numUnresolved++
+		}
+	}
+
+	return numUnresolved
 }
 
 func (m *Model) numRequestedReviewOwners() int {
