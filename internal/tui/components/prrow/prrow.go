@@ -36,6 +36,9 @@ func (pr *PullRequest) renderNumComments() string {
 	}
 
 	numCommentsStyle := pr.Ctx.Styles.Common.FaintTextStyle
+	if pr.Data.Primary.ReviewThreads.HasUnresolved() {
+		numCommentsStyle = pr.getTextStyle().Foreground(pr.Ctx.Theme.WarningText)
+	}
 	return numCommentsStyle.Render(
 		fmt.Sprintf(
 			"%d",

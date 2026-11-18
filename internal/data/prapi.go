@@ -90,7 +90,7 @@ type PullRequestData struct {
 	Repository       Repository
 	Assignees        Assignees            `graphql:"assignees(first: 3)"`
 	Comments         Comments             `graphql:"comments"`
-	ReviewThreads    ReviewThreads        `graphql:"reviewThreads"`
+	ReviewThreads    ReviewThreads        `graphql:"reviewThreads(last: 50)"`
 	Reviews          ReviewsNumber        `graphql:"reviews"`
 	ReviewRequests   ReviewRequestsNumber `graphql:"reviewRequests"`
 	IsDraft          bool
@@ -278,6 +278,19 @@ type Comments struct {
 
 type ReviewThreads struct {
 	TotalCount int
+	Nodes      []struct {
+		IsResolved bool
+	}
+}
+
+// HasUnresolved reports whether any of the fetched threads is still open.
+func (t ReviewThreads) HasUnresolved() bool {
+	for _, thread := range t.Nodes {
+		if !thread.IsResolved {
+			return true
+		}
+	}
+	return false
 }
 
 type Review struct {
