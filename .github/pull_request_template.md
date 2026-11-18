@@ -2,7 +2,7 @@
 
 Closes #<issue number>
 
-- [] I have read the [Contributing](../CONTRIBUTING.md) and the strict [No-AI Policy](../AI_POLICY.md) guides.
+- [] I have read the [Contributing](../CONTRIBUTING.md) guide.
 
 ## How Did You Test this Change?
 
